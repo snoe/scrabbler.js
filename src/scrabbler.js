@@ -27,6 +27,11 @@ var scrabbler = (function() {
             $('#rack').val('');
 
             $('#solve').click(function(e) { 
+                _.each(self.placed, function(tileData, xy) {
+                    if (!tileData.isold) {
+                        delete self.placed[xy];
+                    }
+                });
                 var solution = solver.solve($('#rack').val(), self.placed);
                 var words = solution.words;
                 $('#found').empty();
@@ -37,7 +42,13 @@ var scrabbler = (function() {
                     var possible = JSON.parse(placing);
                     possibles.push({score:score, placed:possible, found: found});
                 });
-                _.sortBy(possibles, function(item) { return item.score; }).reverse().forEach(function(item) {
+                _.sortBy(possibles, function(item) { 
+                    var score = '' + item.score;
+                    while (score.length < 3) {
+                        score = '0' + score;
+                    }
+                    return score + item.found; 
+                }).reverse().forEach(function(item) {
                     var wordDiv = $('<div>' + item.score + '-' + item.found + '</div>').data('placed', item.placed);
                     $('#found').append(wordDiv);
                 });
@@ -121,6 +132,12 @@ var scrabbler = (function() {
                     $('#save').triggerHandler('click');
                 }
             });
+            $('#rack').keypress(function(e) {
+                if (e.keyCode == 13){
+                    $('#solve').triggerHandler('click');
+                }
+            });
+
             this.initSave();
             ctx = b.getContext('2d');
             ctx.textBaseline = 'middle';
@@ -174,10 +191,16 @@ var scrabbler = (function() {
             $('#saved').empty();
             $('#saved').append('<option value=""></option>');
             var slen = window.localStorage.length;
+            var saves = [];
             for (var x = 0; x < slen; x++){
                 var savename = window.localStorage.key(x);
-                $('#saved').append('<option value="' + savename + '">' + savename + '</option>');
+                saves.push(savename);
             }
+            saves.sort()
+                 .filter(function(savename) {return savename.indexOf('/') == -1 })
+                 .forEach(function(savename) {
+                    $('#saved').append('<option value="' + savename + '">' + savename + '</option>');
+                  });
             $('#saved').val(selected);
         },
 

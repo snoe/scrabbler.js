@@ -41,7 +41,6 @@ var solver = (function() {
                 }, this);
             }, this);
         },
-        debug: false,
         solve: function(rack, placed) {
             this.count = 0;
             var tiles = rack.split('');
