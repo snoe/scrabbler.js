@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script src="jquery.min.js" type="text/javascript"></script>
+        <script src="jquery.min.js" type="text/javascript"></script>
+        <script src="underscore-min.js" type="text/javascript"></script>
+        <script src='scrabbler.js' type='text/javascript'></script>
+        <script src='dict.js' type='text/javascript'></script>
+        <script src='solver.js' type='text/javascript'></script>
+    </head>
+    <body>
+        <div id="page">
+            <div id="savebox">
+                <div>
+                    <button id='clear'>clear</button>
+                    <input id='savename'/>
+                    <button id='save'>save</button>
+                    <select id='saved'></select>
+                    <button id='delete'>delete</button>
+                </div>
+            </div>
+            <div id="mainbox">
+                <div id="boardbox">
+                    <canvas width=450 height=450 id=board></canvas>
+                </div>
+                <div id="solvebox">
+                    <div id="rackbox">
+                        <input id='rack'/>
+                        <button id='solve'>solve</button>
+                    </div>
+                    <div id="found"></div>
+                </div>
+            </div>
+            <div id="footerbox">
+            </div>
+        </div>
+    </body>
+
+</html>
+

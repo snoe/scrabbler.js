@@ -1,0 +1,56 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+#page, #mainbox, #solvebox, #savebox {
+    display: box;
+    display: -webkit-box;
+    display: -moz-box;
+}
+
+#page, #solvebox { 
+    box-orient: vertical;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+}
+
+#page {
+    height: 100%;
+    box-align: center;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+}
+
+#mainbox {
+    box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+}
+
+#savebox {
+    width: 100%;
+    background-color: rgb(200, 60, 10);
+    margin-bottom: 20px;
+}
+
+#solvebox {
+}
+
+#found {
+    box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    overflow: auto;
+    cursor: pointer;
+}
+
+#found > :nth-child(odd) {
+    background: #E0E0E0;
+}
+
+#board {
+    margin: 2px;
+    padding: 1px;
+    border: 1px solid black;
+}
