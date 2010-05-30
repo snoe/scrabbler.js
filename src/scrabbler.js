@@ -26,15 +26,8 @@ var scrabbler = (function() {
            
             $('#rack').val('');
 
-            $('#solve').click(function(e) { 
-                _.each(self.placed, function(tileData, xy) {
-                    if (!tileData.isold) {
-                        delete self.placed[xy];
-                    }
-                });
-                var solution = solver.solve($('#rack').val(), self.placed);
+            $('#solve').bind('solver/solved', function(e, solution) {
                 var words = solution.words;
-                $('#found').empty();
 
                 var possibles = [];
                 _.each(words, function(found, placing) {
@@ -53,6 +46,16 @@ var scrabbler = (function() {
                     $('#found').append(wordDiv);
                 });
 
+            });
+
+            $('#solve').click(function(e) { 
+                $('#found').empty();
+                _.each(self.placed, function(tileData, xy) {
+                    if (!tileData.isold) {
+                        delete self.placed[xy];
+                    }
+                });
+                solver.solve($('#rack').val(), self.placed);
             });
 
             var dir = 'h';
