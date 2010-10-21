@@ -2,6 +2,7 @@ $(document).ready( function() {
     new scrabbler.App({el: this}); 
 });
 
+
 scrabbler.App = Backbone.View.extend({
 
     initialize: function() {
@@ -24,27 +25,29 @@ scrabbler.App = Backbone.View.extend({
             '...T..t.t..T...'
         ];
 
-        scrabbler.board = new scrabbler.Board({
-            squares: squares,
+        var scoreKeeper = new scrabbler.ScoreKeeper({squares: squares});
+
+        var board = new scrabbler.Board({
+            scoreKeeper: scoreKeeper,
             placed: {},
             dir: 'h',
             selected: [0,0]
         });
 
-        scrabbler.solver = new scrabbler.Solver({
-            board: squares,
+        var solver = new scrabbler.Solver({
+            scoreKeeper: scoreKeeper,
             dictionary: scrabbler.dict
         });
 
         var boardElement = this.$('#board')[0];
-        var boardView = new scrabbler.BoardView({el: boardElement, model: scrabbler.board});
+        var boardView = new scrabbler.BoardView({el: boardElement, model: board});
 
 
         var solutions = new scrabbler.Boards();
         var solveElement = this.$('#rightColumn')[0];
-        var solveView = new scrabbler.SolverView({el: solveElement, collection: solutions});
+        var solveView = new scrabbler.SolverView({el: solveElement, model: solver, collection: solutions});
+        solveView.setBoard(board);
 
-        solveView.bind('onSolve', this.onSolve);
     },
     onSolve: function() {
         console.log('yo');
@@ -55,34 +58,6 @@ scrabbler.App = Backbone.View.extend({
 var scrabbler = (function() {
     var ctx = null;
     return {
-        onSolveClick: function(e) {
-            _.each(this.placed, function(tileData, xy) {
-                if (!tileData.isold) {
-                    delete self.placed[xy];
-                }
-            });
-            var solution = solver.solve($('#rack').val(), this.placed);
-            var words = solution.words;
-            $('#found').empty();
-
-            var possibles = [];
-            _.each(words, function(found, placing) {
-                var score = solution.scores[placing];
-                var possible = JSON.parse(placing);
-                possibles.push({score:score, placed:possible, found: found});
-            });
-            _.sortBy(possibles, function(item) { 
-                var score = '' + item.score;
-                while (score.length < 3) {
-                    score = '0' + score;
-                }
-                return score + item.found; 
-            }).reverse().forEach(function(item) {
-                var wordDiv = $('<div>' + item.score + ' - ' + (''+item.found).toUpperCase() + '</div>').data('placed', item.placed);
-                $('#found').append(wordDiv);
-            });
-
-        },
 
         onFoundKeyDown: function(e) {
             var selected = $('#found').data('selected');
@@ -211,28 +186,6 @@ var scrabbler = (function() {
                   });
             $('#saved').val(selected);
         },
-
-        selectTile: function(x, y, dir, placed) {
-            this.selectedX = x = (x >= 0) ? ((x <= 14) ? x : 14) : 0 ;
-            this.selectedY = y = (y >= 0) ? ((y <= 14) ? y : 14) : 0 ;
-            if (placed) {
-                this.drawTiles(placed, true);
-            }
-
-            if (ctx) {
-                ctx.strokeStyle = "rgba(210,71,11,1)";
-                ctx.fillStyle = "rgba(210,71,11,0.3)";
-                ctx.fillRect(x*30,y*30,30,30);
-                ctx.strokeRect(x*30,y*30,30,30);
-
-                ctx.font = "8px Helvetica Verdana";  
-                var arrow = (dir == 'h') ? String.fromCharCode(8594) : String.fromCharCode(8595); 
-                ctx.fillStyle = "rgba(0,0,0,1)";
-                ctx.fillText(arrow, x * 30 + 24, y * 30 + 8);  
-            }
-        },
-
-        
 
     };
 })();

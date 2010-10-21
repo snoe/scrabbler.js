@@ -35,19 +35,19 @@ scrabbler.Board = Backbone.Model.extend({
         }
     },
 
-    deleteSelected: function() {
+    deleteTile: function(xy) {
         var placed = _.clone(this.get('placed'));
-        delete placed[this.getPlaceKey()];
+        delete placed[xy];
         this.set({'placed': placed});
     },
 
     deletePrevious: function() {
         this.moveBack();
-        this.deleteSelected();
+        this.deleteTile(this.getPlaceKey());
     },
 
     deleteCurrent: function() {
-        this.deleteSelected();
+        this.deleteTile(this.getPlaceKey());
         this.moveForward();
     },
 
@@ -72,6 +72,22 @@ scrabbler.Board = Backbone.Model.extend({
         x = (x >= 0) ? ((x <= 14) ? x : 14) : 0 ;
         y = (y >= 0) ? ((y <= 14) ? y : 14) : 0 ;
         this.set({'selected': [x,y]});
+    },
+    
+    resetPlaced: function() {
+        _.each(this.get('placed'), function(tileData, xy) {
+            if (!tileData.isold) {
+                this.deleteTile(xy);
+            }
+        }, this);
+    },
+
+    lockPlaced: function() {
+        _.each(this.get('placed'), function(tileData, xy) {
+            if (!tileData.isold) {
+               tileData.isold = true; 
+            }
+        }, this);
     },
 
     getPlaceKey: function() {

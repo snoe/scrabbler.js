@@ -17,7 +17,6 @@ debug = false;
 scrabbler.Solver = Backbone.Model.extend({
     initialize: function() {
         var dictionary = this.get('dictionary');
-        var board = this.get('board');
         this.bonus = 35;
         this.memoStart = {};
         this.memoPartial = {};
@@ -29,17 +28,6 @@ scrabbler.Solver = Backbone.Model.extend({
             this.dict[word] = true;
         }, this);
 
-        this.board = board;
-        this.bonusTiles = {};
-        this.board.forEach(function(row, x) { 
-            this.xmax = x; 
-            row.split('').forEach(function(square, y) {
-                this.ymax = y; 
-                if (square != '.'){
-                    this.bonusTiles[x+","+y] = square;
-                }
-            }, this);
-        }, this);
     },
     solve: function(rack, placed) {
         this.count = 0;
@@ -151,7 +139,7 @@ scrabbler.Solver = Backbone.Model.extend({
         }
         
         var atBoardStart = (dir == 'h') ? x == 0 : y == 0;
-        var atBoardEnd = (dir == 'h') ? x == this.xmax : y == this.ymax;
+        var atBoardEnd = (dir == 'h') ? x == this.get('scoreKeeper').xmax : y == this.get('scoreKeeper').ymax;
         var partialDict = this.getPartialWords(mainword, dictionary);
         var startDict = this.getWordStarts(mainword, dictionary);
         if (startDict.length) {
@@ -229,6 +217,7 @@ scrabbler.Solver = Backbone.Model.extend({
         }
         return this.memoStart[partialWord];
     },
+
     getPartialWords: function(partialWord, dictionary) {
         debug && console.log('partial', partialWord, dictionary.length);
         if ( !this.memoPartial[partialWord] ) {
@@ -251,6 +240,7 @@ scrabbler.Solver = Backbone.Model.extend({
         return scratch;
     },
 
+    // TODO This is pretty horrendous
     // find the word at position x, y in direction dir
     findWords: function(x, y, dir, placed) { 
         var found = {};
@@ -267,16 +257,16 @@ scrabbler.Solver = Backbone.Model.extend({
         var hmulti = 1;
         var hscore = 0;
         var hNewCount = 0
-        hmulti *= this.wordMultiplier(tileData, i, y);
-        hscore += this.scoreForTile(tileData, i, y);
+        hmulti *= this.get('scoreKeeper').wordMultiplier(tileData, i, y);
+        hscore += this.get('scoreKeeper').scoreForTile(tileData, i, y);
         hNewCount += !tileData.isold;
 
         while (placed[(++i)+','+y]) {
             tileData = placed[i+','+y];
             hword += tileData.tile;
         
-            hmulti *= this.wordMultiplier(tileData, i, y);
-            hscore += this.scoreForTile(tileData, i, y);
+            hmulti *= this.get('scoreKeeper').wordMultiplier(tileData, i, y);
+            hscore += this.get('scoreKeeper').scoreForTile(tileData, i, y);
             hNewCount += !tileData.isold;
         }
         var bonus = (hNewCount == 7) ? this.bonus : 0; 
@@ -300,16 +290,16 @@ scrabbler.Solver = Backbone.Model.extend({
         var vmulti = 1;
         var vscore = 0;
         var vNewCount = 0
-        vmulti *= this.wordMultiplier(tileData, x, j);
-        vscore += this.scoreForTile(tileData, x, j);
+        vmulti *= this.get('scoreKeeper').wordMultiplier(tileData, x, j);
+        vscore += this.get('scoreKeeper').scoreForTile(tileData, x, j);
         vNewCount += !tileData.isold;
 
         while (placed[x+','+(++j)]) {
             tileData = placed[x+','+j];
             vword += tileData.tile;
 
-            vmulti *= this.wordMultiplier(tileData, x, j);
-            vscore += this.scoreForTile(tileData, x, j);
+            vmulti *= this.get('scoreKeeper').wordMultiplier(tileData, x, j);
+            vscore += this.get('scoreKeeper').scoreForTile(tileData, x, j);
             vNewCount += !tileData.isold;
 
         }
@@ -361,39 +351,4 @@ scrabbler.Solver = Backbone.Model.extend({
         return possibles;
     },
 
-    scoreForTile: function(tileData, x, y) {
-        var two = 'd,l,n,u';
-        var three = 'g,h,y';
-        var four = 'b,c,f,m,p,w';
-        var five = 'k,v';
-        var eight = 'x';
-        var ten = 'j,q,z';
-        
-        var check = function (i) {
-            return tileData.tile == i;
-        }
-
-        var score = 1;
-        _.any(two, check) && (score = 2);
-        _.any(three, check) && (score = 3);
-        _.any(four, check) && (score = 4);
-        _.any(five, check) && (score = 5);
-        _.any(eight, check) && (score = 8);
-        _.any(ten, check) && (score = 10);
-        
-        if (x !== undefined && !tileData.isold) {
-            var bonus = this.bonusTiles[x+','+y];
-            score *= bonus == 't' ? 3 : (bonus == 'd' ? 2 : 1);
-        }
-
-        return tileData.isblank ? 0 : score;
-    },
-
-    wordMultiplier: function(tileData, x, y) {
-        if (tileData.isold) {
-            return 1;
-        }
-        var bonus = this.bonusTiles[x+','+y];
-        return bonus == 'T' ? 3 : (bonus == 'D' ? 2 : 1);
-    },
 });

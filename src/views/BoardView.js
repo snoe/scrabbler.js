@@ -118,7 +118,7 @@ scrabbler.BoardView = Backbone.View.extend({
 
         this.ctx.fillStyle = "Black";  
         this.ctx.font = "8px Helvetica, Verdana";  
-        this.ctx.fillText(scrabbler.solver.scoreForTile(tileData), x * 30 + 25, y * 30 + 26); 
+        this.ctx.fillText(this.model.get('scoreKeeper').scoreForTile(tileData), x * 30 + 25, y * 30 + 26); 
         this.ctx.font = "20px Helvetica, Verdana";  
         this.ctx.fillText(tileData.tile.toUpperCase(), x * 30 + 15, y * 30 + 18);  
     },
@@ -130,7 +130,7 @@ scrabbler.BoardView = Backbone.View.extend({
         this.ctx.fillRect(0,0,450,450);
         this.ctx.fillStyle = 'transparent';
         this.ctx.fillRect(0,0,450,450);
-        this.model.get('squares').forEach(function(row) { 
+        this.model.get('scoreKeeper').get('squares').forEach(function(row) { 
 
             row.split('').forEach(function(square) {
                 this.ctx.strokeStyle = 'white'; 
