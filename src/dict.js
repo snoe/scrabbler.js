@@ -1,3 +1,4 @@
+var scrabbler = scrabbler || {};
 scrabbler.dict = [
     'aa',
     'aah',

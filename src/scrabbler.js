@@ -1,8 +1,12 @@
+$(document).ready( function() {
+    new scrabbler.App({el: this}); 
+});
 
-var scrabbler = (function() {
-    var ctx = null;
-    return {
-        squares: [
+scrabbler.App = Backbone.View.extend({
+
+    initialize: function() {
+
+        var squares = [
             '...T..t.t..T...',
             '..d..D...D..d..',
             '.d..d.....d..d.',
@@ -18,102 +22,106 @@ var scrabbler = (function() {
             '.d..d.....d..d.',
             '..d..D...D..d..',
             '...T..t.t..T...'
-        ],
+        ];
+
+        scrabbler.board = new scrabbler.Board({
+            squares: squares,
+            placed: {},
+            dir: 'h',
+            selected: [0,0]
+        });
+
+        scrabbler.solver = new scrabbler.Solver({
+            board: squares,
+            dictionary: scrabbler.dict
+        });
+
+        var boardElement = this.$('#board')[0];
+        var boardView = new scrabbler.BoardView({el: boardElement, model: scrabbler.board});
+
+
+        var solutions = new scrabbler.Boards();
+        var solveElement = this.$('#rightColumn')[0];
+        var solveView = new scrabbler.SolverView({el: solveElement, collection: solutions});
+
+        solveView.bind('onSolve', this.onSolve);
+    },
+    onSolve: function() {
+        console.log('yo');
+    }
+});
+
+/*
+var scrabbler = (function() {
+    var ctx = null;
+    return {
+        onSolveClick: function(e) {
+            _.each(this.placed, function(tileData, xy) {
+                if (!tileData.isold) {
+                    delete self.placed[xy];
+                }
+            });
+            var solution = solver.solve($('#rack').val(), this.placed);
+            var words = solution.words;
+            $('#found').empty();
+
+            var possibles = [];
+            _.each(words, function(found, placing) {
+                var score = solution.scores[placing];
+                var possible = JSON.parse(placing);
+                possibles.push({score:score, placed:possible, found: found});
+            });
+            _.sortBy(possibles, function(item) { 
+                var score = '' + item.score;
+                while (score.length < 3) {
+                    score = '0' + score;
+                }
+                return score + item.found; 
+            }).reverse().forEach(function(item) {
+                var wordDiv = $('<div>' + item.score + ' - ' + (''+item.found).toUpperCase() + '</div>').data('placed', item.placed);
+                $('#found').append(wordDiv);
+            });
+
+        },
+
+        onFoundKeyDown: function(e) {
+            var selected = $('#found').data('selected');
+            if (e.keyCode == 40) {
+                if (selected.nextSibling) {
+                    $(selected.nextSibling).trigger('click');
+                }
+                return false;
+            }
+            if (e.keyCode == 38) {
+                if (selected.previousSibling) {
+                    $(selected.previousSibling).trigger('click');
+                }
+                return false;
+            }
+        },
+
         init: function() {
-            var self = this;
+            self = this;
+            this.dir = 'h';
             this.placed = {};
             solver.init(scrabbler.dict, this.squares);           
+            this.selectTile(0, 0, self.dir);
            
             $('#rack').val('');
-
-            $('#solve').click(function(e) { 
-                _.each(self.placed, function(tileData, xy) {
-                    if (!tileData.isold) {
-                        delete self.placed[xy];
-                    }
-                });
-                var solution = solver.solve($('#rack').val(), self.placed);
-                var words = solution.words;
-                $('#found').empty();
-
-                var possibles = [];
-                _.each(words, function(found, placing) {
-                    var score = solution.scores[placing];
-                    var possible = JSON.parse(placing);
-                    possibles.push({score:score, placed:possible, found: found});
-                });
-                _.sortBy(possibles, function(item) { 
-                    var score = '' + item.score;
-                    while (score.length < 3) {
-                        score = '0' + score;
-                    }
-                    return score + item.found; 
-                }).reverse().forEach(function(item) {
-                    var wordDiv = $('<div>' + item.score + '-' + item.found + '</div>').data('placed', item.placed);
-                    $('#found').append(wordDiv);
-                });
-
-            });
-
-            var dir = 'h';
-            this.selectTile(0, 0, dir);
-            $('#board').click(function(e) {
-                var ex = e.offsetX;
-                var ey = e.offsetY;
-                var x = Math.floor(ex / 30);
-                var y = Math.floor(ey / 30);
-
-                self.selectTile(x, y, dir, self.placed);
-            });
-
-            $("#board")
-                .attr("contentEditable", "true")
-                .mousedown(function(){ $(this).focus(); return false; }) 
-                .keydown(function(e){ 
-                    var newX = self.selectedX;
-                    var newY = self.selectedY; 
-                    if (e.keyCode == 37) {
-                        newX = newX - 1; 
-                        dir = 'h';
-                    } else if (e.keyCode == 38) {
-                        newY = newY - 1;
-                        dir = 'v';
-                    } else if (e.keyCode == 39) {
-                        newX = newX + 1;
-                        dir = 'h';
-                    } else if (e.keyCode == 40) {
-                        newY = newY + 1;
-                        dir = 'v';
-                    } else if (e.keyCode == 8) {
-                        if (dir == 'h') {
-                            newX = newX - 1;
-                        } else {
-                            newY = newY - 1;
-                        }
-                        delete self.placed[newX + ',' + newY];
-                    } else if (e.keyCode == 32) {
-                        if (dir == 'h') {
-                            newX = newX + 1;
-                        } else {
-                            newY = newY + 1;
-                        }
-                        delete self.placed[self.selectedX + ',' + self.selectedY];
-                    } else if (e.keyCode >= 65 && e.keyCode <= 90) {
-                        if (dir == 'h') {
-                            newX = newX + 1;
-                        } else {
-                            newY = newY + 1;
-                        }
-                        var key = String.fromCharCode(e.keyCode).toLowerCase();
-                        self.placed[self.selectedX + ',' + self.selectedY] = {tile:key, isold:true};
-                    }
-                    self.selectTile(newX, newY, dir, self.placed);
-                    return (e.keyCode == 9);
-                });
+            $('#solve').click(_.bind(this.onSolveClick,this));
 
             var b = $('#board')[0];
 
+            $('#found').attr("contentEditable", "true")
+                        .keydown(this.onFoundKeyDown);
+
+
             $('#found').delegate('div', 'click', function(e) {
+                $(this).addClass('selected');
+                var $found = $('#found');
+                $found.scrollTo(this, {offset:-100});
+                $($found.data('selected')).removeClass('selected');
+                $found.data('selected', this);
                 self.placed = $(this).data('placed');
                 self.drawTiles(self.placed, true);
             });
@@ -223,90 +231,10 @@ var scrabbler = (function() {
                 ctx.fillText(arrow, x * 30 + 24, y * 30 + 8);  
             }
         },
-        drawTiles: function(placed, clear) {
-            clear && this.clearBoard();
-            var keys = _.keys(placed);
-            keys = _.sortBy(keys, function(xy) {
-                var pos = xy.split(',');
-                var x = parseInt(pos[0]);
-                var y = parseInt(pos[1]);
-                return x * y;    
-            });
-            _.each(keys, function(xy) {
-                var tileData = placed[xy];
-                var pos = xy.split(',');
-                var x = parseInt(pos[0]);
-                var y = parseInt(pos[1]);
-                ctx.shadowOffsetX = 2;
-                ctx.shadowOffsetY = 2;
-                ctx.shadowBlur = 4;
-                ctx.shadowColor = 'rgb(0, 0, 0)';
-                if (tileData.isold) {
-                    ctx.fillStyle = 'rgb(180,135,107)';
-                    ctx.fillRect(x*30+1, y*30+1, 30-2, 30-2);
-                } else {
-                    ctx.fillStyle = 'rgb(224,180,145)';
-                    ctx.fillRect(x*30+1, y*30+1, 30-2, 30-2);
-                }
-                ctx.shadowOffsetX = 20;
-                ctx.shadowOffsetY = 0;
-                ctx.shadowBlur = 0;
-                ctx.shadowColor = '';
-                
-                ctx.fillStyle = "Black";  
-                ctx.font = "8px Helvetica, Verdana";  
-                ctx.fillText(solver.scoreForTile(tileData), x * 30 + 25, y * 30 + 26); 
-                ctx.font = "20px Helvetica, Verdana";  
-                ctx.fillText(tileData.tile.toUpperCase(), x * 30 + 15, y * 30 + 22);  
-            },this);
-        },
 
-        colorForSquare: function(square) {
-            switch(square) {
-                case 'T':
-                    return 'rgb(219,51,87)';
-                case 't':
-                    return 'rgb(47,180,215)';
-                case 'D':
-                    return 'rgb(223,185,200)';
-                case 'd':
-                    return 'rgb(188,222,235)';
-                default:
-                    return 'rgb(238,230,228)';
-            }   
-        },
         
 
-        clearBoard: function() {
-            var x = y = 0;
-
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0,0,450,450);
-            ctx.fillStyle = 'transparent';
-            ctx.fillRect(0,0,450,450);
-            this.squares.forEach(function(row) { 
-
-                row.split('').forEach(function(square) {
-                    ctx.strokeStyle = 'white'; 
-                    ctx.fillStyle = this.colorForSquare(square);
-                    ctx.fillRect(x*30, y*30, 30, 30);
-                    ctx.strokeRect(x*30, y*30, 30, 30);
-                    x++;
-                }, this);
-
-                x = 0;
-                y++;
-            }, this);
-            var star =String.fromCharCode(9733); 
-            ctx.fillStyle = 'red'; 
-            ctx.font = "20px Helvetica Verdana";  
-            ctx.fillText(star, 7*30 + 15, 7*30 + 15);
-        }
     };
 })();
 
-
-$(document).ready( function() {
-    scrabbler.init();
-});
-
+*/

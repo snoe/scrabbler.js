@@ -1,4 +1,5 @@
 html, body {
+    font-family: Helvetica;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -45,14 +46,18 @@ body, .box {
 }
 
 #foundborder {
-    padding: 10px;
+    /*
+    padding: 10px 5px 10px 10px;
     border: 1px solid rgb(200,60,10);
     border-radius: 5px; 
     -webkit-border-radius: 5px; 
     -moz-border-radius: 5px; 
+    */
     box-orient: vertical;
     -webkit-box-orient: vertical;
     -moz-box-orient: vertical;
+    background: #EEE6E4;
+    background: white; 
 }
 
 #found {
@@ -64,10 +69,21 @@ body, .box {
     -webkit-box-orient: vertical;
     -moz-box-orient: vertical;
     cursor: pointer;
+    outline: none;
 }
 
-#found > :nth-child(odd) {
-    background: #E0E0E0;
+#found > * {
+    padding: 1px;
+    margin: 5px;
+    border: 1px solid transparent;
+    box-shadow: 2px 2px 4px black;
+    -webkit-box-shadow: 2px 2px 4px black;
+    -moz-box-shadow: 2px 2px 4px black; 
+    background-color: #E0B491;
+}
+
+#found > .selected {
+    border: 1px solid black;
 }
 
 header {
