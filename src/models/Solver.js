@@ -7,10 +7,10 @@ debug = false;
         a. check for valid words, horizontally and vertically
         b. while vert word is words start 
             - add tile to end
-        b.  start
-        c. if horizontal word is not valid stop
-        c. if vertical word is valid, add to list (no need to keep horizontal words? pts?)
-        d. stop when run out of tiles
+        c.  start
+        d. if horizontal word is not valid stop
+        e. if vertical word is valid, add to list (no need to keep horizontal words? pts?)
+        f. stop when run out of tiles
     4. Build horizontal word
     5. return list of board placements -> new words built by placement
 */
@@ -53,7 +53,6 @@ scrabbler.Solver = Backbone.Model.extend({
         }, this);
         debug && console.log('words', this.words);
         debug && console.log('scores', this.scores);
-        console.log(this.count);
         return {words: this.words, scores: this.scores}; 
     },
 
@@ -240,81 +239,82 @@ scrabbler.Solver = Backbone.Model.extend({
         return scratch;
     },
 
-    // TODO This is pretty horrendous
+    getStartOfWord: function( x, y, dir, placed) {
+        var i = px = x, j = py = y;
+
+        var prevLetter = function() {
+            if (dir == 'h') {
+                px = i;
+                i -= 1;
+            } else {
+                py = j;
+                j -= 1;
+            }
+            return i + ',' + j;
+        }
+        while (placed[prevLetter()]) { }
+        return dir == 'h' ? px : py;
+    },
+
+    findWord: function(x, y, dir, placed) {
+        // Find first letter in word
+        var start = this.getStartOfWord(x, y, dir, placed);
+
+        var word = "";
+        var multi = 1;
+        var score = 0;
+        var newCount = 0
+        var tileData;
+
+        if (dir == 'h') {
+            i = start;
+            j = y;
+        } else {
+            i = x;
+            j = start;
+        }
+
+        // calculate score as you go through each letter of word
+        while (placed[i+','+j]) {
+            tileData = placed[i+','+j];
+            word += tileData.tile;
+        
+            multi *= this.get('scoreKeeper').wordMultiplier(tileData, i, j);
+            score += this.get('scoreKeeper').scoreForTile(tileData, i, j);
+            newCount += !tileData.isold;
+            if (dir == 'h'){
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        var bonus = (newCount == 7) ? this.bonus : 0; 
+      
+        var len = word.replace(/[\(\)]/g, '').length; 
+        var score = multi * score + bonus;
+
+        return {word: word, score: score, len: len, start: start, newCount: newCount}
+    },
+
     // find the word at position x, y in direction dir
     findWords: function(x, y, dir, placed) { 
         var found = {};
         
-        // horizontal
-        var i = x, hword;
+        var hword = this.findWord(x, y, 'h', placed);
+        var vword = this.findWord(x, y, 'v', placed);
 
-        // Find first letter in word
-        while (placed[(--i)+','+y]) { }
-        var tileData = placed[(++i)+','+y];
-        var hword = tileData.tile;
-        var hstart = i;
-        
-        var hmulti = 1;
-        var hscore = 0;
-        var hNewCount = 0
-        hmulti *= this.get('scoreKeeper').wordMultiplier(tileData, i, y);
-        hscore += this.get('scoreKeeper').scoreForTile(tileData, i, y);
-        hNewCount += !tileData.isold;
-
-        while (placed[(++i)+','+y]) {
-            tileData = placed[i+','+y];
-            hword += tileData.tile;
-        
-            hmulti *= this.get('scoreKeeper').wordMultiplier(tileData, i, y);
-            hscore += this.get('scoreKeeper').scoreForTile(tileData, i, y);
-            hNewCount += !tileData.isold;
+        if (dir == 'h' || hword.len > 1) {
+            found.h = hword.word; 
+            found.hscore = hword.score;
         }
-        var bonus = (hNewCount == 7) ? this.bonus : 0; 
-      
-        var hlen = hword.replace(/[\(\)]/g, '').length; 
-        if (dir == 'h' || hlen > 1) {
-            found.h = hword; 
-            found.hscore = hmulti * hscore + bonus
-        }
-        if (dir == 'h'){
-            found.start = hstart;
-            found.length = hlen;
-        } 
-        // vertical
-        var j = y, vword;
-        while (placed[x+','+(--j)]) { }
-        var tileData = placed[x+','+(++j)];
-        var vword = tileData.tile;
-        var vstart = j;
-        
-        var vmulti = 1;
-        var vscore = 0;
-        var vNewCount = 0
-        vmulti *= this.get('scoreKeeper').wordMultiplier(tileData, x, j);
-        vscore += this.get('scoreKeeper').scoreForTile(tileData, x, j);
-        vNewCount += !tileData.isold;
-
-        while (placed[x+','+(++j)]) {
-            tileData = placed[x+','+j];
-            vword += tileData.tile;
-
-            vmulti *= this.get('scoreKeeper').wordMultiplier(tileData, x, j);
-            vscore += this.get('scoreKeeper').scoreForTile(tileData, x, j);
-            vNewCount += !tileData.isold;
-
-        }
-        var bonus = (vNewCount == 7) ? this.bonus : 0; 
-        
-        var vlen = vword.replace(/[\(\)]/g, '').length; 
-        if (dir == 'v' || vlen > 1) {
-            found.v = vword;
-            found.vscore = vmulti * vscore + bonus;
+        if (dir == 'v' || vword.len > 1) {
+            found.v = vword.word;
+            found.vscore = vword.score;
         } 
 
-        if (dir == 'v'){
-            found.start = vstart;
-            found.length = vlen; 
-        }
+        found.start = dir == 'h' ? hword.start : vword.start;
+        found.length = dir == 'h' ? hword.len : vword.len;
+
         return found; 
     },
     findEmpties: function(placed) {

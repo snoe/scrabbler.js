@@ -51,9 +51,9 @@ scrabbler.Board = Backbone.Model.extend({
         this.moveForward();
     },
 
-    placeLetter: function(letter) {
+    placeLetter: function(letter, isBlank) {
         var placed = _.clone(this.get('placed'));
-        placed[this.getPlaceKey()] = {tile:letter, isold:true};
+        placed[this.getPlaceKey()] = {tile:letter, isold:true, isblank: isBlank};
         this.set({'placed': placed});
 
         this.moveForward();

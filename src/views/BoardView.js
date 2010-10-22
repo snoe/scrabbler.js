@@ -48,7 +48,7 @@ scrabbler.BoardView = Backbone.View.extend({
             this.model.deleteCurrent();
         } else if (e.keyCode >= 65 && e.keyCode <= 90 /*letters*/) {
             var letter = String.fromCharCode(e.keyCode).toLowerCase();
-            this.model.placeLetter(letter);
+            this.model.placeLetter(letter, e.shiftKey);
         } else {
             return true;
         }
