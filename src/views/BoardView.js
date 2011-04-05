@@ -5,7 +5,6 @@ scrabbler.BoardView = Backbone.View.extend({
         this.ctx.textAlign = 'center';
 
         this.render();
-        this.handleEvents();
 
         _.bindAll(this, 'render');
         this.model.bind('change', this.render);

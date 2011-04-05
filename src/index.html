@@ -5,7 +5,8 @@
         <script src="jquery.min.js" type="text/javascript"></script>
         <script src="jquery.scrollTo.min.js" type="text/javascript"></script>
         <script src="underscore-min.js" type="text/javascript"></script>
-        <script src='backbone.js' type='text/javascript'></script>
+        <script src='backbone-min.js' type='text/javascript'></script>
+        <script src='backbone.localStorage-min.js' type='text/javascript'></script>
 
         <script src='dict.js' type='text/javascript'></script>
         <script src='models/ScoreKeeper.js' type='text/javascript'></script>
@@ -15,16 +16,21 @@
 
         <script src='models/Solver.js' type='text/javascript'></script>
         <script src='views/SolverView.js' type='text/javascript'></script>
+        
+        <script src='models/SaveGame.js' type='text/javascript'></script>
+        <script src='views/SaveView.js' type='text/javascript'></script>
 
         <script src='scrabbler.js' type='text/javascript'></script>
     </head>
     <body>
         <div id="page" class="box">
-            <header>
+            <header id='saver'>
                 <button id='clear'>clear</button>
                 <input id='savename'/>
                 <button id='save'>save</button>
-                <select id='saved'></select>
+                <select id='saved'>
+                    <option></option>
+                </select>
                 <button id='delete'>delete</button>
                 <span id='title'>scrabbler.js</span>
             </header>

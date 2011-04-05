@@ -48,122 +48,13 @@ scrabbler.App = Backbone.View.extend({
         var solveView = new scrabbler.SolverView({el: solveElement, model: solver, collection: solutions});
         solveView.setBoard(board);
 
+        var saves = new scrabbler.SaveGames();
+
+        var saveElement = this.$('#saver')[0];
+        var saveView = new scrabbler.SaveView({el: saveElement, collection: saves, board: board});
+
     },
     onSolve: function() {
     }
 });
 
-/*
-var scrabbler = (function() {
-    var ctx = null;
-    return {
-
-        onFoundKeyDown: function(e) {
-            var selected = $('#found').data('selected');
-            if (e.keyCode == 40) {
-                if (selected.nextSibling) {
-                    $(selected.nextSibling).trigger('click');
-                }
-                return false;
-            }
-            if (e.keyCode == 38) {
-                if (selected.previousSibling) {
-                    $(selected.previousSibling).trigger('click');
-                }
-                return false;
-            }
-        },
-
-        init: function() {
-            self = this;
-            this.dir = 'h';
-            this.placed = {};
-            solver.init(scrabbler.dict, this.squares);           
-            this.selectTile(0, 0, self.dir);
-           
-            $('#rack').val('');
-            $('#solve').click(_.bind(this.onSolveClick,this));
-
-            var b = $('#board')[0];
-
-
-            $('#found').delegate('div', 'click', function(e) {
-                $(this).addClass('selected');
-                var $found = $('#found');
-                $found.scrollTo(this, {offset:-100});
-                $($found.data('selected')).removeClass('selected');
-                $found.data('selected', this);
-                self.placed = $(this).data('placed');
-                self.drawTiles(self.placed, true);
-            });
-
-            this.initSave();
-            ctx = b.getContext('2d');
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            this.drawTiles(this.placed, true);
-        },
-        
-        initSave: function() {
-            var self = this;
-            this.updateSaved();
-            $('#save').click(function(e) {
-                var savename = $('#savename').val();
-                if (!!savename) {
-                    window.localStorage.setItem(savename + '/rack', $('#rack').val());
-                    window.localStorage.setItem(savename, JSON.stringify(self.placed));
-                    self.updateSaved(savename);
-                }
-            });
-            
-            $('#saved').change(function(e) {
-                var savename = $(this).val();
-                if (!!savename) {
-                    $('#savename').val(savename);
-                    $('#found').empty();
-                    $('#rack').val(window.localStorage.getItem(savename + '/rack'));
-                    self.placed = JSON.parse(window.localStorage.getItem(savename)) || {};
-                    self.drawTiles(self.placed, true);
-                } else {
-                    $('#clear').triggerHandler('click');
-                }
-            });
-            
-            $('#delete').click(function(e) {
-                var savename = $('#saved').val();
-                window.localStorage.removeItem(savename + '/rack');
-                window.localStorage.removeItem(savename);
-                self.updateSaved();
-            });
-            $('#clear').click(function(e) {
-                $('#saved').val('');
-                $('#savename').val('');
-                $('#found').empty();
-                $('#rack').val('');
-                self.placed = {};
-                self.clearBoard();
-            });
-            
-        },
-
-        updateSaved: function(selected) {
-            $('#saved').empty();
-            $('#saved').append('<option value=""></option>');
-            var slen = window.localStorage.length;
-            var saves = [];
-            for (var x = 0; x < slen; x++){
-                var savename = window.localStorage.key(x);
-                saves.push(savename);
-            }
-            saves.sort()
-                 .filter(function(savename) {return savename.indexOf('/') == -1 })
-                 .forEach(function(savename) {
-                    $('#saved').append('<option value="' + savename + '">' + savename + '</option>');
-                  });
-            $('#saved').val(selected);
-        },
-
-    };
-})();
-
-*/

@@ -1,9 +1,4 @@
 scrabbler.SolverView = Backbone.View.extend({
-    initialize: function() {
-        this.handleEvents();
-  
-    },
-
     setBoard: function(board) {
         this.board = board;
         self = this;
