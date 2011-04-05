@@ -1,8 +1,29 @@
 TestCase("SingleLetterTest", {
     setUp : function() {
-        solver.debug = false;
         this.placed = {7:{7:{tile:'a',isold:true}}};
         this.dict = 'at\nate\nba\ncar\nsha\ngram\nprams'
+        var squares = [
+            '...T..t.t..T...',
+            '..d..D...D..d..',
+            '.d..d.....d..d.',
+            'T..t...D...t..T',
+            '..d...d.d...d..',
+            '.D...t...t...D.',
+            't...d.....d...t',
+            '...D...X...D...',
+            't...d.....d...t',
+            '.D...t...t...D.',
+            '..d...d.d...d..',
+            'T..t...D...t..T',
+            '.d..d.....d..d.',
+            '..d..D...D..d..',
+            '...T..t.t..T...'
+        ];
+        var scoreKeeper = new scrabbler.ScoreKeeper({squares: squares});
+        var solver = new scrabbler.Solver({
+            dictionary: this.dict,
+            scoreKeeper: scoreKeeper       
+        });
     },
     testFindEmpty : function() {
         var empties = solver.findEmpty([7,7], this.placed);

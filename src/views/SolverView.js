@@ -6,6 +6,7 @@ scrabbler.SolverView = Backbone.View.extend({
 
     setBoard: function(board) {
         this.board = board;
+        self = this;
         this.$('#found').delegate('div', 'click', function(e) {
             $(this).addClass('selected');
             var $found = $('#found');
@@ -14,11 +15,51 @@ scrabbler.SolverView = Backbone.View.extend({
             $found.data('selected', this);
             board.set({placed : $(this).data('placed')});
         });
+        this.$('#found').delegate('div', 'dblclick', function(e) {
+            var placed = _.clone($(this).data('placed'));
+            _.each(placed, function(tileData, xy) {
+                var td = _.clone(tileData);
+                if (!td.isold) {
+                    var rack = $('#rack').val();
+                    $('#rack').val(rack.replace(td.tile, ''));
+                    td.isold = true;
+                }
+                placed[xy] = td;
+            });
+            board.set({placed : placed});
+
+            if ($('#saved').val() == $('#savename').val()){
+                $('#save').triggerHandler('click');
+            }
+        });
+        this.$('#found').attr("contentEditable", "true")
+                        .keydown(this.onFoundKeyDown);
+
+        this.$('#rack').keypress(function(e) {
+            if (e.keyCode == 13){
+                self.onSolve();
+            }
+        });
 
     },
 
     events: {
         'click #solve': 'onSolve',
+    },
+
+    onFoundKeyDown: function(e) {
+        var selected = $('#found').data('selected');
+        if (e.keyCode == 40) {
+            if (selected.nextSibling) {
+                $(selected.nextSibling).trigger('click');
+            }
+        }
+        if (e.keyCode == 38) {
+            if (selected.previousSibling) {
+                $(selected.previousSibling).trigger('click');
+            }
+        }
+        return false;
     },
    
     onSolve: function() {

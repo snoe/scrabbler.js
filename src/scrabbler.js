@@ -50,7 +50,6 @@ scrabbler.App = Backbone.View.extend({
 
     },
     onSolve: function() {
-        console.log('yo');
     }
 });
 
@@ -87,9 +86,6 @@ var scrabbler = (function() {
 
             var b = $('#board')[0];
 
-            $('#found').attr("contentEditable", "true")
-                        .keydown(this.onFoundKeyDown);
-
 
             $('#found').delegate('div', 'click', function(e) {
                 $(this).addClass('selected');
@@ -99,26 +95,6 @@ var scrabbler = (function() {
                 $found.data('selected', this);
                 self.placed = $(this).data('placed');
                 self.drawTiles(self.placed, true);
-            });
-            $('#found').delegate('div', 'dblclick', function(e) {
-                self.placed = $(this).data('placed');
-                _.each(self.placed, function(tileData, xy) {
-                    if (!tileData.isold) {
-                        var rack = $('#rack').val();
-                        $('#rack').val(rack.replace(tileData.tile, ''));
-                        tileData.isold = true;
-                    }
-                });
-                self.drawTiles(self.placed, true);
-
-                if ($('#saved').val() == $('#savename').val()){
-                    $('#save').triggerHandler('click');
-                }
-            });
-            $('#rack').keypress(function(e) {
-                if (e.keyCode == 13){
-                    $('#solve').triggerHandler('click');
-                }
             });
 
             this.initSave();

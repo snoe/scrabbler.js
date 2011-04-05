@@ -41,12 +41,18 @@
                         <li>Double click solutions to place on board.</li>
                     </ul>
                 </div>
-                <canvas width=450 height=450 id=board></canvas>
+                <!-- this wrapper div is needed in firefox -->
+                <div id="maincolum">
+                    <canvas width=450 height=450 id=board></canvas>
+                </div>
                 <div id="rightcolumn" class="box">
-                    <input id='rack'/>
-                    <button id='solve'>solve</button>
+                    <!-- this wrapper div is needed in firefox -->
+                    <div>
+                        <input id='rack'/>
+                        <button id='solve'>solve</button>
+                    </div>
                     <div id="foundborder" class="box">
-                        <div id="found" class-"box">
+                        <div id="found" class="box">
                         </div>
                     </div>
                 </div>
