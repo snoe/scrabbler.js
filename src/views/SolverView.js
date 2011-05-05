@@ -94,8 +94,10 @@ SolverView = Backbone.View.extend({
         this.$found.empty();
 
         var possibles = [];
-        _.each(words, function(found) {
-            possibles.push({score: found.score, placed: found.placed, found: found.found});
+        _.each(words, function(found, i) {
+            var score = solution.scores[i];
+            var placed = JSON.parse(i);
+            possibles.push({score: score, placed: placed, found: found});
         });
 
         _.sortBy(possibles, this.cmpScore).

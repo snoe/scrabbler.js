@@ -21,8 +21,8 @@ Solver = Backbone.Model.extend({
         this.memoStart = {};
         this.memoPartial = {};
 
-        this.dictstr = dictionary;
-        this.dictList = dictionary.split('\n');;
+        this.dictList = dictionary;
+        this.dictstr = dictionary.join('\n');
         this.dict = {};
         this.dictList.forEach(function(word) {
             this.dict[word] = true;

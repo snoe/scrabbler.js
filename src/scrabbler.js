@@ -34,7 +34,7 @@ App = Backbone.View.extend({
             selected: [0,0]
         });
 
-        var solver = new NewSolver({
+        var solver = new Solver({
             scoreKeeper: scoreKeeper,
             dictionary: scrabbleDict
         });
