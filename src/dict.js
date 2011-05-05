@@ -1,5 +1,4 @@
-var scrabbler = scrabbler || {};
-scrabbler.dict = [
+scrabbleDict = [
     'aa',
     'aah',
     'aahed',
@@ -79341,4 +79340,4 @@ scrabbler.dict = [
     'zymurgy',
     'zyzzyva',
     'zyzzyvas'
-].join('\n');
+];

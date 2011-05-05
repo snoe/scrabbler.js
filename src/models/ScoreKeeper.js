@@ -1,4 +1,4 @@
-scrabbler.ScoreKeeper = Backbone.Model.extend({
+ScoreKeeper = Backbone.Model.extend({
     initialize: function() {
         this.buildBonusTiles(this.get('squares'));
     },

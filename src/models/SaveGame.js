@@ -1,6 +1,6 @@
-scrabbler.SaveGame = Backbone.Model.extend({
+SaveGame = Backbone.Model.extend({
 });
-scrabbler.SaveGames = Backbone.Collection.extend({
+SaveGames = Backbone.Collection.extend({
     localStorage: new Store('saves'),
-    model: scrabbler.SaveGame
+    model: SaveGame
 });

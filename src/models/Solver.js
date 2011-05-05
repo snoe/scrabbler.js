@@ -14,7 +14,7 @@ debug = false;
     4. Build horizontal word
     5. return list of board placements -> new words built by placement
 */
-scrabbler.Solver = Backbone.Model.extend({
+Solver = Backbone.Model.extend({
     initialize: function() {
         var dictionary = this.get('dictionary');
         this.bonus = 35;

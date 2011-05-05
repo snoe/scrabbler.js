@@ -2,11 +2,11 @@
     <head>
         <title>scrabbler.js</title>
         <link rel="stylesheet" type="text/css" href="style.css"/>
-        <script src="jquery.min.js" type="text/javascript"></script>
-        <script src="jquery.scrollTo.min.js" type="text/javascript"></script>
-        <script src="underscore-min.js" type="text/javascript"></script>
-        <script src='backbone-min.js' type='text/javascript'></script>
-        <script src='backbone.localStorage-min.js' type='text/javascript'></script>
+        <script src="vendor/jquery.min.js" type="text/javascript"></script>
+        <script src="vendor/jquery.scrollTo.min.js" type="text/javascript"></script>
+        <script src="vendor/underscore-min.js" type="text/javascript"></script>
+        <script src='vendor/backbone-min.js' type='text/javascript'></script>
+        <script src='vendor/backbone.localStorage-min.js' type='text/javascript'></script>
 
         <script src='dict.js' type='text/javascript'></script>
         <script src='models/ScoreKeeper.js' type='text/javascript'></script>
@@ -14,7 +14,7 @@
         <script src='models/Board.js' type='text/javascript'></script>
         <script src='views/BoardView.js' type='text/javascript'></script>
 
-        <script src='models/Solver.js' type='text/javascript'></script>
+        <script src='models/NewSolver.js' type='text/javascript'></script>
         <script src='views/SolverView.js' type='text/javascript'></script>
         
         <script src='models/SaveGame.js' type='text/javascript'></script>
@@ -58,7 +58,7 @@
                         <button id='solve'>solve</button>
                     </div>
                     <div id="foundborder" class="box">
-                        <div id="found" class="box">
+                        <div id="found" class="box" contentEditable="true">
                         </div>
                     </div>
                 </div>

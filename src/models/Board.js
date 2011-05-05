@@ -1,4 +1,4 @@
-scrabbler.Board = Backbone.Model.extend({
+Board = Backbone.Model.extend({
     moveLeft: function() {
         this.set({'dir': 'h'});
         this.moveBack();
@@ -96,7 +96,7 @@ scrabbler.Board = Backbone.Model.extend({
     },
 });
 
-scrabbler.Boards = Backbone.Collection.extend({
-    model: scrabbler.Board
+Boards = Backbone.Collection.extend({
+    model: Board
 });
 

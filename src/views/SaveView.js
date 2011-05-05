@@ -1,4 +1,4 @@
-scrabbler.SaveView = Backbone.View.extend({
+SaveView = Backbone.View.extend({
     events: {
         'click #save': 'create',
         'click #clear': 'clearBoard',
@@ -13,6 +13,10 @@ scrabbler.SaveView = Backbone.View.extend({
         this.collection.bind('refresh', this.addAll);
         this.collection.bind('all', this.render);
         this.collection.fetch();
+
+        var selected = localStorage.getItem('selectedSave');
+        $('#saved').val(selected);
+        $('#saved').change();
     },
 
     render: function() {
@@ -33,7 +37,9 @@ scrabbler.SaveView = Backbone.View.extend({
 
     create: function() {
        var result = this.collection.create({name: this.$('#savename').val(), placed:this.board.get('placed')}); 
-       console.log('result ' + result);
+
+       this.$('#saved').val(result.get('name'));
+       localStorage.setItem('selectedSave', $('#savename').val());
     },
 
     setBoard: function(board) {
@@ -49,5 +55,6 @@ scrabbler.SaveView = Backbone.View.extend({
         if (placed) {
             this.board.set({'placed': placed});
         }
+        localStorage.setItem('selectedSave', $('#saved').val());
     }
 });

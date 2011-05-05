@@ -1,4 +1,4 @@
-scrabbler.BoardView = Backbone.View.extend({
+BoardView = Backbone.View.extend({
     initialize: function() {
         this.ctx = this.el.getContext('2d');
         this.ctx.textBaseline = 'middle';
