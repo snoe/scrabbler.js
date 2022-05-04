@@ -1,5 +1,7 @@
+var chosenBoard = (new URLSearchParams(window.location.search)).get("board");
+
 $(document).ready( function() {
-    new App({el: this}); 
+    new App({el: this});
 });
 
 
@@ -25,7 +27,29 @@ App = Backbone.View.extend({
             '...T..t.t..T...'
         ];
 
-        var scoreKeeper = new ScoreKeeper({squares: squares});
+        var squares2 = [
+            'T..d...T...d..T',
+            '.D...t...t...D.',
+            '..D...d.d...D..',
+            '...D...d...D..d',
+            '....D.....D....',
+            '.t...t...t...t.',
+            '..d...d.d...d..',
+            'T..d...D...d..T',
+            '..d...d.d...d..',
+            '.t...t...t...t.',
+            '....D.....D....',
+            'd..D...d...D..d',
+            '..D...d.d...D..',
+            '.D...t...t...D.',
+            'T..d...T...d..T',
+        ];
+        var chosenSquares = squares;
+        if (chosenBoard == "2") {
+          chosenSquares = squares2;
+        }
+
+        var scoreKeeper = new ScoreKeeper({squares: chosenSquares});
 
         var board = new Board({
             scoreKeeper: scoreKeeper,
